@@ -14,23 +14,22 @@ load_dotenv()
 
 token = os.getenv("TOKEN")
 
-identity = {
-    "op": 2,
-    "d": {
-        "token": token,
-        "intents": 1<<25,
-        "properties": {
-            "$os": "linux",
-            "$browser": "chromium",
-            "$device": "pcidklol",
-        }
-    }
-}
 
 class Gateway:
     def __init__(self) -> None:
-        self._identification = identity
         self._d = None
+        self._identity = {
+            "op": 2,
+            "d": {
+                "token": token,
+                "intents": 1<<25,
+                "properties": {
+                    "$os": "linux",
+                    "$browser": "chromium",
+                    "$device": "pcidklol",
+            }
+        }
+    }
     
     async def _handle_message(self, websocket, msg):
         message = json.loads(msg)
@@ -40,8 +39,11 @@ class Gateway:
             case 10:
                 heartbeat = message["d"]["heartbeat_interval"]
                 asyncio.create_task(self._heartbeat_send(heartbeat, websocket, True))
+                asyncio.create_task(self._identify(websocket))
             case 11:
-                asyncio.create_task(self._heartbeat_send(self._interval, websocket))
+                asyncio.create_task(self._heartbeat_send(self._interval, websocket))    
+            case 1:
+                asyncio.create_task(self._heartbeat_send(0, websocket))
     
     async def _init_connection(self):
         async with websockets.connect(ws_url) as ws:
@@ -49,7 +51,6 @@ class Gateway:
                 response = await ws.recv()
                 await self._handle_message(ws, response)
                 print(response)
-                print(type(ws))
     
     async def _heartbeat_send(self, interval: int, websocket: WebSocketClientProtocol, initial_connection = False):
         self._interval = interval
@@ -65,9 +66,10 @@ class Gateway:
         }
         json_payload = json.dumps(payload)
         await websocket.send(json_payload)
-        
-        
-         
+    
+    async def _identify(self, websocket):
+        identity = json.dumps(self._identity)
+        await websocket.send(identity)
 
     def connect(self):
         asyncio.get_event_loop().run_until_complete(self._init_connection())
