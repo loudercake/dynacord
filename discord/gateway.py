@@ -5,7 +5,7 @@ import random
 
 from websockets.legacy.client import WebSocketClientProtocol
 
-ws_url = "wss://gateway.discord.gg/?v=9&encoding=json"
+ws_url = "wss://gateway.discord.gg/?v=6&encoding=json"
 
 from dotenv import load_dotenv
 import os
@@ -22,7 +22,7 @@ class Gateway:
             "op": 2,
             "d": {
                 "token": token,
-                "intents": 1<<25,
+                "intents": 1<<9,
                 "properties": {
                     "$os": "linux",
                     "$browser": "chromium",
@@ -44,7 +44,6 @@ class Gateway:
                 asyncio.create_task(self._heartbeat_send(self._interval, websocket))    
             case 1:
                 asyncio.create_task(self._heartbeat_send(0, websocket))
-    
     async def _init_connection(self):
         async with websockets.connect(ws_url) as ws:
             while True:
@@ -59,7 +58,6 @@ class Gateway:
             await asyncio.sleep(interval*jitter/1000)
         else:
             await asyncio.sleep(interval/1000)
-        print("chicanery")
         payload = {
             "op": 1,
             "d": self._d
@@ -67,7 +65,7 @@ class Gateway:
         json_payload = json.dumps(payload)
         await websocket.send(json_payload)
     
-    async def _identify(self, websocket):
+    async def _identify(self, websocket: WebSocketClientProtocol):
         identity = json.dumps(self._identity)
         await websocket.send(identity)
 
