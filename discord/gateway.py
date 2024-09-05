@@ -5,6 +5,8 @@ import random
 
 from websockets.legacy.client import WebSocketClientProtocol
 
+import api
+
 ws_url = "wss://gateway.discord.gg/?v=6&encoding=json"
 
 from dotenv import load_dotenv
