@@ -19,8 +19,8 @@ class API:
         message = {
             'content': msg
         }
-        print(requests.post(f"{self._url}/channels/{channel_id}/messages", json=message, headers=self._headers).content)
+        requests.post(f"{self._url}/channels/{channel_id}/messages", json=message, headers=self._headers)
 
 if __name__ == "__main__":
     api = API()
-    api.send_message("1278151925946126360", "a")
+    api.send_message("1278151925946126360", "poo")
