@@ -5,8 +5,6 @@ import random
 
 from websockets.legacy.client import WebSocketClientProtocol
 
-import api
-
 ws_url = "wss://gateway.discord.gg/?v=6&encoding=json"
 
 from dotenv import load_dotenv
@@ -76,5 +74,5 @@ class Gateway:
 
 if __name__ == "__main__":
     a = Gateway()
-    a.connect()
+    asyncio.create_task(a.connect())
     print("beyond")

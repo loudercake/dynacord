@@ -1,10 +1,16 @@
-from typing import Optional
-from dataclasses import dataclass
+from typing import Optional, List, Literal
+from 
 
-@dataclass
+class Embed:
+    title: Optional[str]
+    _type: Optional[Literal["rich", "image", "video", "gifv", "article", "link", "poll_result"]]
+    description: Optional[str]
+    url: Optional[str]
+    timestamp: Optional[str]
+
 class Message:
-    content: Optional|str
-    tts: Optional|bool
-    embeds:
+    content: Optional[str]
+    tts: Optional[bool]
+    embeds: List[Embed]
 
 
